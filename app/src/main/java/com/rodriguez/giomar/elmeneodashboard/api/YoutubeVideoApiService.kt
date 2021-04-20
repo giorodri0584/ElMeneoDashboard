@@ -2,6 +2,7 @@ package com.rodriguez.giomar.el_meneo.api
 
 import android.util.Log
 import com.google.gson.Gson
+import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.rodriguez.giomar.elmeneodashboard.api.MyKtorClient
 import com.rodriguez.giomar.elmeneodashboard.model.YoutubeVideo
@@ -22,8 +23,19 @@ object YoutubeVideoApiService {
         getVideoDetails("OlbBcclGPK8")
     }
     suspend fun getVideoDetails(videoId: String) {
-        val TAG = "getVideoDetails"
-        val response: HttpResponse = MyKtorClient.youtubeClient.get("http://www.youtube.com/oembed?url=http://www.youtube.com/watch?v=$videoId&format=json")
-        Log.d(TAG, response.readText())
+        val response: HttpResponse = MyKtorClient.youtubeClient.get("https://www.youtube.com/oembed?url=http://www.youtube.com/watch?v=$videoId&format=json")
+        val jsonObject: JsonObject = gson.fromJson(response.readText(), JsonObject::class.java)
+
+        Log.d(TAG, jsonObject.get("title").toString())
+        getchannelImageUrl(jsonObject.get("author_name").toString())
+    }
+    suspend fun getchannelImageUrl(channelId: String) {
+        val response: HttpResponse = MyKtorClient.youtubeClient.get(
+            "https://www.googleapis.com/youtube/v3/search?q=${channelId}&part=snippet&key=AIzaSyBQBEouY2lIeM1hFBqDvxgEIv5djFQOl9I",
+        )
+        val jsonArray: JsonArray = gson.fromJson(response.readText(), JsonArray::class.java)
+        //val jsonObject: JsonObject = jsonArray.get(0)
+
+        Log.d(TAG, jsonArray.toString())
     }
 }
