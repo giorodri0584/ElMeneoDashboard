@@ -27,4 +27,6 @@ data class YoutubeVideo(
     var viewCount: Int = 0,
     @SerializedName("commentsCount")
     var commentsCount: Int = 0
-) : Parcelable
+) : Parcelable {
+    constructor(): this("", "", "","","", "", 0, 0, 0)
+}

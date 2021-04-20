@@ -22,20 +22,33 @@ object YoutubeVideoApiService {
 //        return ArrayList(videosArray.toMutableList())
         getVideoDetails("OlbBcclGPK8")
     }
-    suspend fun getVideoDetails(videoId: String) {
+    suspend fun getVideoDetails(videoId: String): YoutubeVideo {
         val response: HttpResponse = MyKtorClient.youtubeClient.get("https://www.youtube.com/oembed?url=http://www.youtube.com/watch?v=$videoId&format=json")
-        val jsonObject: JsonObject = gson.fromJson(response.readText(), JsonObject::class.java)
+        val videoObject: JsonObject = gson.fromJson(response.readText(), JsonObject::class.java)
 
-        Log.d(TAG, jsonObject.get("title").toString())
-        getchannelImageUrl(jsonObject.get("author_name").toString())
+        val channelId: String = videoObject.get("author_name").toString().removePrefix("https://www.youtube.com/channel/")
+        val channelImageUrl = getchannelImageUrl(channelId = channelId)
+        return YoutubeVideo(
+            videoId = videoId,
+            title = videoObject.get("title").asString,
+            videoCoverImageUrl = videoObject.get("thumbnail_url").asString,
+            channelName = videoObject.get("author_name").asString,
+            channelImageUrl = channelImageUrl,
+            channelUrl = videoObject.get("author_url").asString,
+        )
     }
-    suspend fun getchannelImageUrl(channelId: String) {
+    private suspend fun getchannelImageUrl(channelId: String) : String {
         val response: HttpResponse = MyKtorClient.youtubeClient.get(
             "https://www.googleapis.com/youtube/v3/search?q=${channelId}&part=snippet&key=AIzaSyBQBEouY2lIeM1hFBqDvxgEIv5djFQOl9I",
         )
-        val jsonArray: JsonArray = gson.fromJson(response.readText(), JsonArray::class.java)
-        //val jsonObject: JsonObject = jsonArray.get(0)
+        val jsonObject: JsonObject = gson.fromJson(response.readText(), JsonObject::class.java)
+        val items = jsonObject.get("items").asJsonArray
+        val channelObject = items[0].asJsonObject
 
-        Log.d(TAG, jsonArray.toString())
+        return channelObject
+            .get("snippet").asJsonObject
+            .get("thumbnails").asJsonObject
+            .get("default").asJsonObject
+            .get("url").asString
     }
 }
