@@ -73,4 +73,5 @@ dependencies {
 
     //glide
     implementation "com.google.accompanist:accompanist-glide:0.7.1"
+
 }

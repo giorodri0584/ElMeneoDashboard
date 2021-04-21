@@ -9,6 +9,7 @@ import com.rodriguez.giomar.elmeneodashboard.model.YoutubeVideo
 import io.ktor.client.features.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import io.ktor.http.*
 
 object YoutubeVideoApiService {
     private const val TAG = "YoutubeVideoApiService"
@@ -21,6 +22,12 @@ object YoutubeVideoApiService {
 //        val videosArray = gson.fromJson(videosString, Array<YoutubeVideo>::class.java)
 //        return ArrayList(videosArray.toMutableList())
         getVideoDetails("OlbBcclGPK8")
+    }
+    suspend fun saveVideo(video: YoutubeVideo) : HttpResponse {
+        return MyKtorClient.client.post("${MyKtorClient.BASE_URL}/YoutubeVideos") {
+            //contentType(ContentType.Application.Json)
+            body = video
+        }
     }
     suspend fun getVideoDetails(videoId: String): YoutubeVideo {
         val response: HttpResponse = MyKtorClient.youtubeClient.get("https://www.youtube.com/oembed?url=http://www.youtube.com/watch?v=$videoId&format=json")
@@ -51,4 +58,5 @@ object YoutubeVideoApiService {
             .get("default").asJsonObject
             .get("url").asString
     }
+
 }

@@ -19,6 +19,7 @@ object MyKtorClient {
             defaultRequest {
                 header("X-Parse-Application-Id", APP_ID)
                 header("X-Parse-REST-API-Key", REST_KEY)
+                header("Content-Type", "application/json")
             }
         }
 
