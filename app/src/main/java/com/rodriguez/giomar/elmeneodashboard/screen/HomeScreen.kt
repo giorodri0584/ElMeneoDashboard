@@ -5,22 +5,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.google.accompanist.glide.GlideImage
-import com.rodriguez.giomar.elmeneodashboard.model.YoutubeVideo
 import com.rodriguez.giomar.elmeneodashboard.screen.component.*
 import com.rodriguez.giomar.elmeneodashboard.viewModel.YoutubeScreenViewModel
 
@@ -38,13 +29,20 @@ class HomeScreen : Fragment() {
                 val video = model.video.value
                 val isLoading = model.isLoading.value
                 val isSavedState = model.isSavedState.value
+                val searchTerm = model.searchTerm.value
                 Scaffold(
                     topBar = { TopAppBar(title = { Text("Video de Youtube") }) },
                     content = {
                         Column {
-                            SearchVideoComponent() { videoUrl ->
-                                model.searchVideo(videoUrl)
-                            }
+                            SearchVideoComponent(
+                                searchTerm,
+                                onSearchTermChange = { search ->
+                                    model.searchTerm.value =search
+                                },
+                                onSearchVideo = {
+                                    model.searchVideo()
+                                }
+                            )
                             Spacer(modifier = Modifier.padding(8.dp))
                             if (video.title.isNotEmpty() && !isLoading) {
                                 VideoDetailComponent(video = video) {

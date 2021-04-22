@@ -16,10 +16,12 @@ class YoutubeScreenViewModel : ViewModel() {
     val video: MutableState<YoutubeVideo> = mutableStateOf(YoutubeVideo())
     val isLoading: MutableState<Boolean> = mutableStateOf(false)
     val isSavedState: MutableState<Boolean> = mutableStateOf(false)
+    val searchTerm: MutableState<String> = mutableStateOf("")
 
-    fun searchVideo(videoUrl: String) {
+    fun searchVideo() {
         isLoading.value = true
         isSavedState.value = false
+        var videoUrl: String = searchTerm.value
         var videoId: String = ""
 
         if(videoUrl.length == 11) {
@@ -42,6 +44,7 @@ class YoutubeScreenViewModel : ViewModel() {
                 video.value = YoutubeVideo()
                 isLoading.value = false
                 isSavedState.value = true
+                searchTerm.value = ""
             }
         }
     }

@@ -15,20 +15,26 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun SearchVideoComponent(onSearchVideo: (String) -> Unit) {
+fun SearchVideoComponent(
+    searchTerm: String,
+    onSearchTermChange: (String) -> Unit,
+    onSearchVideo: () -> Unit) {
     //https://www.youtube.com/watch?v=bngsrbFI2UY
-    val textState = remember { mutableStateOf(TextFieldValue(text = "")) }
+    //val textState = remember { mutableStateOf(TextFieldValue(text = "")) }
     Row(
         modifier = Modifier.padding(8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         OutlinedTextField(
-            value = textState.value,
-            onValueChange = { textState.value = it }
+            value = searchTerm,
+            onValueChange = {
+                onSearchTermChange(it)
+                //textState.value = it
+            }
         )
         Spacer(modifier = Modifier.padding(horizontal = 8.dp) )
         Button(
-            onClick = { onSearchVideo(textState.value.text) },
+            onClick = { onSearchVideo() },
         ) {
             Text("Buscar")
         }
