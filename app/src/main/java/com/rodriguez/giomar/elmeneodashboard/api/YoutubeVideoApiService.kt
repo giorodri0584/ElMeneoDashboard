@@ -23,11 +23,13 @@ object YoutubeVideoApiService {
 //        return ArrayList(videosArray.toMutableList())
         getVideoDetails("OlbBcclGPK8")
     }
-    suspend fun saveVideo(video: YoutubeVideo) : HttpResponse {
-        return MyKtorClient.client.post("${MyKtorClient.BASE_URL}/YoutubeVideos") {
+    suspend fun saveVideo(video: YoutubeVideo) : Int {
+
+        val response: HttpResponse =  MyKtorClient.client.post("${MyKtorClient.BASE_URL}/YoutubeVideos") {
             //contentType(ContentType.Application.Json)
             body = video
         }
+        return response.status.value
     }
     suspend fun getVideoDetails(videoId: String): YoutubeVideo {
         val response: HttpResponse = MyKtorClient.youtubeClient.get("https://www.youtube.com/oembed?url=http://www.youtube.com/watch?v=$videoId&format=json")

@@ -21,6 +21,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.accompanist.glide.GlideImage
 import com.rodriguez.giomar.elmeneodashboard.model.YoutubeVideo
+import com.rodriguez.giomar.elmeneodashboard.screen.component.*
 import com.rodriguez.giomar.elmeneodashboard.viewModel.YoutubeScreenViewModel
 
 
@@ -35,29 +36,35 @@ class HomeScreen : Fragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 val video = model.video.value
+                val isLoading = model.isLoading.value
+                val isSavedState = model.isSavedState.value
                 Scaffold(
                     topBar = { TopAppBar(title = { Text("Video de Youtube") }) },
                     content = {
-                        Column(
-                            modifier = Modifier
-                                .verticalScroll(rememberScrollState())
-                        ) {
+                        Column {
                             SearchVideoComponent() { videoUrl ->
                                 model.searchVideo(videoUrl)
                             }
                             Spacer(modifier = Modifier.padding(8.dp))
-                            if (video.title.isNotEmpty()) {
-                                YoutubeVideoContent(video)
-                                Spacer(modifier = Modifier.padding(8.dp))
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.Center
-                                ) {
-                                    SaveVideoComponent {
-                                        model.saveVideo()
-                                    }
+                            if (video.title.isNotEmpty() && !isLoading) {
+                                VideoDetailComponent(video = video) {
+                                    model.saveVideo()
                                 }
+                            }
+                            if(isLoading){
+                                Column(
+                                    verticalArrangement = Arrangement.Center,
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .fillMaxHeight()
+                                ) {
+                                    LoadingComponent()
+                                }
+
+                            }
+                            if (isSavedState) {
+                                SavedVideoDetailComponent()
                             }
                         }
 
@@ -68,62 +75,6 @@ class HomeScreen : Fragment() {
     }
 }
 
-@Composable
-fun SaveVideoComponent(onSaveVideo: () -> Unit) {
-    Button(
-        onClick = { onSaveVideo() },
-    ) {
-        Text("Guardar Video")
-    }
-}
-@Composable
-fun SearchVideoComponent(onSearchVideo: (String) -> Unit) {
-    //https://www.youtube.com/watch?v=bngsrbFI2UY
-    val textState = remember { mutableStateOf(TextFieldValue(text = "s5yRZOQ3EWI")) }
-    Row(
-        modifier = Modifier.padding(8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        OutlinedTextField(
-            value = textState.value,
-            onValueChange = { textState.value = it }
-        )
-        Spacer(modifier = Modifier.padding(horizontal = 8.dp) )
-        Button(
-            onClick = { onSearchVideo(textState.value.text) },
-        ) {
-            Text("Buscar")
-        }
-    }
-}
-@Composable
-fun YoutubeVideoContent(
-    video: YoutubeVideo
-) {
-    Card(
-        modifier = Modifier
-            .padding(8.dp),
-        elevation = 8.dp
-    ) {
-        Column(
 
-        ) {
-            GlideImage(
-                data = video.videoCoverImageUrl,
-                contentDescription = "My content description",
-                fadeIn = true
-            )
-            Column(
-                modifier = Modifier
-                    .padding(8.dp)
-            ) {
-                Text(
-                    text = video.title,
-                    style = MaterialTheme.typography.body1
-                )
-            }
 
-        }
-    }
-}
 
